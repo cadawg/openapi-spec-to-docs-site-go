@@ -90,4 +90,4 @@ openapi-docs/
 
 ## License
 
-MIT
+GPLv3
