@@ -1,0 +1,283 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Webmail Info API",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://webmaillookup.com",
+      "variables": {
+        "port": {
+          "enum": [
+            "443"
+          ],
+          "default": "443"
+        }
+      }
+    }
+  ],
+  "paths": {
+    "/public_api/v1/get_webmail_info": {
+      "post": {
+        "summary": "Get webmail information for a domain or email address",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "description": "Email address or domain to lookup"
+                  },
+                  "skip_cache": {
+                    "type": "boolean",
+                    "description": "Optional flag to skip cache",
+                    "default": false
+                  }
+                },
+                "required": [
+                  "email"
+                ]
+              },
+              "examples": {
+                "simple": {
+                  "value": {
+                    "email": "example@gmail.com"
+                  }
+                },
+                "withSkipCache": {
+                  "value": {
+                    "email": "example@gmail.com",
+                    "skip_cache": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "nice_name": {
+                          "type": "string"
+                        },
+                        "webmail_url": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "webmail_search_url": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "is_disposable": {
+                          "type": "boolean"
+                        },
+                        "is_freemail": {
+                          "type": "boolean"
+                        },
+                        "is_privacy_service": {
+                          "type": "boolean"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "gmail": {
+                    "value": {
+                      "success": true,
+                      "message": "Successfully retrieved webmail info",
+                      "data": {
+                        "name": "Google (Public)",
+                        "nice_name": "Gmail",
+                        "webmail_url": "https://mail.google.com/mail",
+                        "webmail_search_url": "https://mail.google.com/mail/#search/%q",
+                        "is_disposable": false,
+                        "is_freemail": true,
+                        "is_privacy_service": false
+                      }
+                    }
+                  },
+                  "privacyService": {
+                    "value": {
+                      "success": true,
+                      "message": "Successfully retrieved webmail info",
+                      "data": {
+                        "name": "Privacy Service",
+                        "nice_name": "Privacy Service",
+                        "webmail_url": null,
+                        "webmail_search_url": null,
+                        "is_disposable": false,
+                        "is_freemail": false,
+                        "is_privacy_service": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "null"
+                    }
+                  }
+                },
+                "example": {
+                  "success": false,
+                  "message": "Error parsing request - should be a json object containing the key email with an email or domain, plus an optional skip_cache argument",
+                  "data": null
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "null"
+                    }
+                  }
+                },
+                "examples": {
+                  "invalidToken": {
+                    "value": {
+                      "success": false,
+                      "message": "The specified api key does not exist",
+                      "data": null
+                    }
+                  },
+                  "noCredits": {
+                    "value": {
+                      "success": false,
+                      "message": "You don't have a valid subscription or credits to pay for this usage, please top up at https://webmaillookup.com/dashboard",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "null"
+                    }
+                  }
+                },
+                "examples": {
+                  "noMXRecords": {
+                    "value": {
+                      "success": false,
+                      "message": "The specified domain does not exist or does not have MX records set",
+                      "data": null
+                    }
+                  },
+                  "unrecognizedProvider": {
+                    "value": {
+                      "success": false,
+                      "message": "Unrecognised provider",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "null"
+                    }
+                  }
+                },
+                "example": {
+                  "success": false,
+                  "message": "An unknown error occurred whilst looking up this email",
+                  "data": null
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}
