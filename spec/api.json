@@ -36,11 +36,6 @@
                   "email": {
                     "type": "string",
                     "description": "Email address or domain to lookup"
-                  },
-                  "skip_cache": {
-                    "type": "boolean",
-                    "description": "Optional flag to skip cache",
-                    "default": false
                   }
                 },
                 "required": [
@@ -51,12 +46,6 @@
                 "simple": {
                   "value": {
                     "email": "example@gmail.com"
-                  }
-                },
-                "withSkipCache": {
-                  "value": {
-                    "email": "example@gmail.com",
-                    "skip_cache": true
                   }
                 }
               }
@@ -162,7 +151,7 @@
                 },
                 "example": {
                   "success": false,
-                  "message": "Error parsing request - should be a json object containing the key email with an email or domain, plus an optional skip_cache argument",
+                  "message": "Error parsing request - should be a json object containing the key email with an email or domain",
                   "data": null
                 }
               }
